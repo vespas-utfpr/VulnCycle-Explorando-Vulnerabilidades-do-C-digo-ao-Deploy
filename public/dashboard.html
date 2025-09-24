@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Aplicação Vulnerável</title>
+    <title>Dashboard Admin</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -33,29 +33,25 @@
                 </div>
             </div>
             
-            <div class="vulnerability-info">
-                <h3>🔓 Vulnerabilidades Implementadas</h3>
-                <ul>
-                    <li><strong>SQL Injection:</strong> Login sem prepared statements</li>
-                    <li><strong>Weak Authentication:</strong> Senhas fracas e previsíveis</li>
-                    <li><strong>Session Management:</strong> Chave de sessão fraca</li>
-                    <li><strong>Authorization Bypass:</strong> Verificações de acesso inadequadas</li>
-                    <li><strong>Information Disclosure:</strong> Endpoint /debug exposto</li>
-                </ul>
-            </div>
-            
-            <div class="debug-section">
-                <h3>🐛 Debug Information</h3>
-                <button onclick="loadDebugInfo()">Carregar Info de Debug</button>
-                <div id="debug-info"></div>
+            <div class="binary-center-card">
+                <h3>🔧 Centro de Binários</h3>
+                <p>Acesse binários executáveis para análise e engenharia reversa</p>
+                <div class="binary-actions">
+                    <a href="/binary" class="binary-btn" target="_blank">
+                        📦 Acessar Centro de Download
+                    </a>
+                    <a href="/binary/info" class="binary-btn" target="_blank">
+                        📊 Informações Técnicas (JSON)
+                    </a>
+                </div>
+                <div class="binary-warning">
+                    <p>⚠️ <strong>Aviso:</strong> Esta funcionalidade expõe binários para download, 
+                    representando uma vulnerabilidade crítica em sistemas reais.</p>
+                </div>
             </div>
             
             <div class="admin-tool-section">
-                <h3>🔧 Ferramenta Administrativa (C)</h3>
-                <div class="tool-warning">
-                    ⚠️ <strong>VULNERÁVEL A BUFFER OVERFLOW</strong><br>
-                    Esta ferramenta demonstra vulnerabilidades de baixo nível!
-                </div>
+                <h3>🔧 Ferramenta Administrativa</h3>
                 
                 <div class="tool-commands">
                     <h4>Comandos Disponíveis:</h4>
@@ -67,20 +63,6 @@
                     <h4>Comando Personalizado:</h4>
                     <input type="text" id="custom-cmd" placeholder="Ex: admin:test ou admin:$(python3 -c 'print(\"A\"*100)')">
                     <button onclick="executarComandoPersonalizado()">Executar</button>
-                </div>
-                
-                <div class="exploit-hints">
-                    <h4>💀 Dicas de Exploração:</h4>
-                    <ul>
-                        <li><strong>Buffer Overflow:</strong> Use comando admin: com payload longo</li>
-                        <li><strong>ROP:</strong> Sobrescreva return address com endereço de acessar_shell()</li>
-                        <li><strong>Ferramentas:</strong> Use exploit_generator.py para criar payloads</li>
-                    </ul>
-                    
-                    <div class="exploit-example">
-                        <strong>Exemplo de Exploit:</strong><br>
-                        <code>admin:$(python3 -c 'print("A"*76 + "BBBB")')</code>
-                    </div>
                 </div>
                 
                 <div id="tool-output"></div>
@@ -113,17 +95,7 @@
                 console.error('Error:', error);
             });
 
-        function loadDebugInfo() {
-            fetch('/debug')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('debug-info').innerHTML = 
-                        '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-                })
-                .catch(error => {
-                    document.getElementById('debug-info').innerHTML = '<p>Erro ao carregar debug info</p>';
-                });
-        }
+       
 
         function executarFerramenta(comando) {
             const outputDiv = document.getElementById('tool-output');

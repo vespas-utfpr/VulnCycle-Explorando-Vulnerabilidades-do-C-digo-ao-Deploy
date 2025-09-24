@@ -158,18 +158,66 @@ button:hover {
     gap: 20px;
 }
 
-.stats-card, .users-card, .vulnerability-info, .debug-section {
+.stats-card, .users-card, .vulnerability-info, .debug-section, .binary-center-card {
     background: white;
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-.stats-card h3, .users-card h3, .vulnerability-info h3, .debug-section h3 {
+.stats-card h3, .users-card h3, .vulnerability-info h3, .debug-section h3, .binary-center-card h3 {
     margin-bottom: 15px;
     color: #333;
     border-bottom: 2px solid #667eea;
     padding-bottom: 5px;
+}
+
+/* Estilos para Centro de Binários */
+.binary-center-card {
+    border-left: 4px solid #e74c3c;
+}
+
+.binary-center-card h3 {
+    border-bottom-color: #e74c3c;
+    color: #e74c3c;
+}
+
+.binary-actions {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.binary-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-block;
+}
+
+.binary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+    color: white;
+}
+
+.binary-warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.binary-warning p {
+    margin: 0;
 }
 
 /* Table Styles */
@@ -218,7 +266,7 @@ table tr:hover {
     width: auto;
     padding: 10px 20px;
     margin-bottom: 15px;
-    background: #17a2b8;
+    background: #764ba2;
 }
 
 .debug-section button:hover {
@@ -308,13 +356,13 @@ table tr:hover {
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    border-left: 4px solid #dc3545;
+    border-left: 4px solid #000000;
 }
 
 .admin-tool-section h3 {
-    color: #dc3545;
+    color: #000000;
     margin-bottom: 15px;
-    border-bottom: 2px solid #dc3545;
+    border-bottom: 2px solid #000000;
     padding-bottom: 5px;
 }
 
@@ -341,7 +389,7 @@ table tr:hover {
     margin-right: 10px;
     margin-bottom: 10px;
     padding: 8px 16px;
-    background: #28a745;
+    background: #764ba2;
     color: white;
     border: none;
     border-radius: 5px;
@@ -350,7 +398,7 @@ table tr:hover {
 }
 
 .tool-commands button:hover {
-    background: #218838;
+    background: #138496;
 }
 
 .custom-command {
@@ -372,12 +420,12 @@ table tr:hover {
 .custom-command button {
     width: auto;
     padding: 8px 16px;
-    background: #fd7e14;
+    background: #764ba2;
     font-size: 14px;
 }
 
 .custom-command button:hover {
-    background: #e8690b;
+    background: #138496;
 }
 
 .exploit-hints {
