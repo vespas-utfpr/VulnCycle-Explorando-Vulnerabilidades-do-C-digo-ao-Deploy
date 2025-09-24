@@ -43,7 +43,7 @@ db.serialize(() => {
     // Inserir usuários padrão com senhas fracas (vulnerabilidade)
     db.run(`INSERT OR IGNORE INTO users (username, password, role) VALUES 
         ('admin', 'admin123', 'admin'),
-        ('user1', 'password', 'user'),
+        ('user', 'password', 'user'),
         ('guest', '123456', 'user')`);
 
     // Inserir algumas mensagens de exemplo
@@ -69,10 +69,8 @@ app.get('/', (req, res) => {
 // Login - VULNERÁVEL A SQL INJECTION
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    
     // Vulnerabilidade: SQL Injection - consulta não preparada
     const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
-    
     db.get(query, (err, user) => {
         if (err) {
             console.error('Database error:', err);
