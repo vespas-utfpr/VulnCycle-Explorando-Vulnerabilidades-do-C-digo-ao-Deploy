@@ -493,3 +493,376 @@ table tr:hover {
         width: 100%;
     }
 }
+
+/* Estilos para formulário de criação de mensagem */
+.create-message-form {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.create-message-form h3 {
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.create-message-form .form-group {
+    margin-bottom: 15px;
+}
+
+.create-message-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.create-message-form input,
+.create-message-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.create-message-form input:focus,
+.create-message-form textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.create-message-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Estilos para páginas de resposta XSS */
+.error-message,
+.success-message {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin: 50px auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+.error-message {
+    border-left: 5px solid #e74c3c;
+}
+
+.success-message {
+    border-left: 5px solid #27ae60;
+}
+
+.error-message h2 {
+    color: #e74c3c;
+    margin-bottom: 20px;
+}
+
+.success-message h2 {
+    color: #27ae60;
+    margin-bottom: 20px;
+}
+
+.error-message p,
+.success-message p {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.error-message a,
+.success-message a {
+    display: inline-block;
+    margin-top: 20px;
+    color: #667eea;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.error-message a:hover,
+.success-message a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para página de busca/visualização */
+.search-form {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.search-form h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.search-form form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: end;
+}
+
+.search-form input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+}
+
+.search-form button {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.search-results {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.search-results h3 {
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.vulnerability-demo {
+    background: #fff3cd;
+    border: 2px solid #ffeaa7;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.vulnerability-demo h4 {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.cookie-info {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+/* Estilos para exemplos de payload */
+.payload-examples {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.payload-examples p {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.payload-examples code {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #e74c3c;
+    word-break: break-all;
+}
+
+/* Estilos para página de exemplos XSS */
+.example-section {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.example-section h3 {
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e74c3c;
+    padding-bottom: 10px;
+}
+
+.attack-scenario {
+    background: #fff3cd;
+    border: 2px solid #ffeaa7;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.attack-scenario h4 {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.attack-scenario ol {
+    margin-left: 20px;
+}
+
+.attack-scenario li {
+    margin-bottom: 5px;
+    color: #856404;
+}
+
+.demo-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.demo-buttons button {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: transform 0.2s;
+}
+
+.demo-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.demo-output {
+    margin-top: 15px;
+    min-height: 50px;
+}
+
+.demo-result {
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.demo-result h4 {
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.demo-result pre {
+    background: #e9ecef;
+    padding: 10px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.test-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.test-links a {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.test-links a:hover {
+    background: #5a67d8;
+}
+
+.mitigation-info {
+    background: #d4edda;
+    border: 2px solid #c3e6cb;
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 25px;
+}
+
+.mitigation-info h3 {
+    color: #155724;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #27ae60;
+    padding-bottom: 10px;
+}
+
+.mitigation-examples {
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.mitigation-examples h4 {
+    color: #155724;
+    margin-bottom: 10px;
+}
+
+.mitigation-examples ol {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.mitigation-examples li {
+    margin-bottom: 5px;
+    color: #155724;
+}
+
+.mitigation-examples code {
+    display: block;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    margin-top: 10px;
+}
