@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens - Aplicação Vulnerável</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📨 Suas Mensagens</h1>
+            <div class="user-info">
+                <span>Usuário logado</span>
+                <form action="/logout" method="POST" style="display: inline;">
+                    <button type="submit" class="logout-btn">Sair</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="messages-content">
+            <div class="messages-list">
+                <h3>📬 Mensagens Recebidas</h3>
+                <div id="messages-container">
+                    <p>Carregando mensagens...</p>
+                </div>
+            </div>
+            
+            <div class="vulnerability-info">
+                <h3>🔍 Vulnerabilidades para Testar</h3>
+                <ul>
+                    <li><strong>IDOR:</strong> Tente modificar parâmetros de ID na URL</li>
+                    <li><strong>Session Fixation:</strong> Analise como as sessões são gerenciadas</li>
+                    <li><strong>XSS:</strong> Teste injeção de scripts nas mensagens</li>
+                </ul>
+                
+                <div class="test-section">
+                    <h4>🧪 Testes de Segurança</h4>
+                    <p>Experimente acessar:</p>
+                    <ul>
+                        <li><a href="/api/messages?user_id=1" target="_blank">Mensagens do Admin (IDOR)</a></li>
+                        <li><a href="/debug" target="_blank">Informações de Debug</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar mensagens do usuário
+        fetch('/api/messages')
+            .then(response => response.json())
+            .then(messages => {
+                const container = document.getElementById('messages-container');
+                if (messages.length === 0) {
+                    container.innerHTML = '<p>Nenhuma mensagem encontrada.</p>';
+                    return;
+                }
+                
+                let html = '';
+                messages.forEach(message => {
+                    html += `
+                        <div class="message-card">
+                            <h4>${message.title}</h4>
+                            <p>${message.content}</p>
+                            <small>Data: ${new Date(message.created_at).toLocaleString('pt-BR')}</small>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('messages-container').innerHTML = 
+                    '<p>Erro ao carregar mensagens</p>';
+                console.error('Error:', error);
+            });
+    </script>
+</body>
+</html>

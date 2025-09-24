@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Aplicação Vulnerável</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Dashboard do Administrador</h1>
+            <div class="user-info">
+                <span>Bem-vindo, Admin!</span>
+                <form action="/logout" method="POST" style="display: inline;">
+                    <button type="submit" class="logout-btn">Sair</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="stats-card">
+                <h3>📊 Estatísticas do Sistema</h3>
+                <div id="stats">
+                    <p>Carregando estatísticas...</p>
+                </div>
+            </div>
+            
+            <div class="users-card">
+                <h3>👥 Usuários do Sistema</h3>
+                <div id="users-table">
+                    <p>Carregando usuários...</p>
+                </div>
+            </div>
+            
+            <div class="vulnerability-info">
+                <h3>🔓 Vulnerabilidades Implementadas</h3>
+                <ul>
+                    <li><strong>SQL Injection:</strong> Login sem prepared statements</li>
+                    <li><strong>Weak Authentication:</strong> Senhas fracas e previsíveis</li>
+                    <li><strong>Session Management:</strong> Chave de sessão fraca</li>
+                    <li><strong>Authorization Bypass:</strong> Verificações de acesso inadequadas</li>
+                    <li><strong>Information Disclosure:</strong> Endpoint /debug exposto</li>
+                </ul>
+            </div>
+            
+            <div class="debug-section">
+                <h3>🐛 Debug Information</h3>
+                <button onclick="loadDebugInfo()">Carregar Info de Debug</button>
+                <div id="debug-info"></div>
+            </div>
+            
+            <div class="admin-tool-section">
+                <h3>🔧 Ferramenta Administrativa (C)</h3>
+                <div class="tool-warning">
+                    ⚠️ <strong>VULNERÁVEL A BUFFER OVERFLOW</strong><br>
+                    Esta ferramenta demonstra vulnerabilidades de baixo nível!
+                </div>
+                
+                <div class="tool-commands">
+                    <h4>Comandos Disponíveis:</h4>
+                    <button onclick="executarFerramenta('users')">Listar Usuários</button>
+                    <button onclick="executarFerramenta('logs')">Verificar Logs</button>
+                </div>
+                
+                <div class="custom-command">
+                    <h4>Comando Personalizado:</h4>
+                    <input type="text" id="custom-cmd" placeholder="Ex: admin:test ou admin:$(python3 -c 'print(\"A\"*100)')">
+                    <button onclick="executarComandoPersonalizado()">Executar</button>
+                </div>
+                
+                <div class="exploit-hints">
+                    <h4>💀 Dicas de Exploração:</h4>
+                    <ul>
+                        <li><strong>Buffer Overflow:</strong> Use comando admin: com payload longo</li>
+                        <li><strong>ROP:</strong> Sobrescreva return address com endereço de acessar_shell()</li>
+                        <li><strong>Ferramentas:</strong> Use exploit_generator.py para criar payloads</li>
+                    </ul>
+                    
+                    <div class="exploit-example">
+                        <strong>Exemplo de Exploit:</strong><br>
+                        <code>admin:$(python3 -c 'print("A"*76 + "BBBB")')</code>
+                    </div>
+                </div>
+                
+                <div id="tool-output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar usuários
+        fetch('/api/users')
+            .then(response => response.json())
+            .then(users => {
+                const table = document.getElementById('users-table');
+                let html = '<table><tr><th>ID</th><th>Usuário</th><th>Função</th></tr>';
+                users.forEach(user => {
+                    html += `<tr><td>${user.id}</td><td>${user.username}</td><td>${user.role}</td></tr>`;
+                });
+                html += '</table>';
+                table.innerHTML = html;
+                
+                // Atualizar estatísticas
+                document.getElementById('stats').innerHTML = `
+                    <p>Total de usuários: ${users.length}</p>
+                    <p>Admins: ${users.filter(u => u.role === 'admin').length}</p>
+                    <p>Usuários comuns: ${users.filter(u => u.role === 'user').length}</p>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('users-table').innerHTML = '<p>Erro ao carregar usuários</p>';
+                console.error('Error:', error);
+            });
+
+        function loadDebugInfo() {
+            fetch('/debug')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('debug-info').innerHTML = 
+                        '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                })
+                .catch(error => {
+                    document.getElementById('debug-info').innerHTML = '<p>Erro ao carregar debug info</p>';
+                });
+        }
+
+        function executarFerramenta(comando) {
+            const outputDiv = document.getElementById('tool-output');
+            outputDiv.innerHTML = '<p>🔄 Executando comando: ' + comando + '</p>';
+            
+            fetch('/admin-tool', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ comando: comando })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let html = '<div class="command-result">';
+                html += '<h4>📄 Resultado do Comando: ' + data.comando + '</h4>';
+                
+                if (data.output) {
+                    html += '<div class="output"><strong>Output:</strong><pre>' + data.output + '</pre></div>';
+                }
+                
+                if (data.error) {
+                    html += '<div class="error"><strong>Erro:</strong><pre>' + data.error + '</pre></div>';
+                }
+                
+                html += '<div class="exit-code"><strong>Exit Code:</strong> ' + data.exitCode + '</div>';
+                html += '</div>';
+                
+                outputDiv.innerHTML = html;
+            })
+            .catch(error => {
+                outputDiv.innerHTML = '<p>❌ Erro ao executar comando: ' + error.message + '</p>';
+            });
+        }
+
+        function executarComandoPersonalizado() {
+            const comando = document.getElementById('custom-cmd').value;
+            if (!comando.trim()) {
+                alert('Por favor, digite um comando!');
+                return;
+            }
+            
+            executarFerramenta(comando);
+        }
+
+        // Adicionar event listener para Enter no campo de comando
+        document.addEventListener('DOMContentLoaded', function() {
+            const cmdInput = document.getElementById('custom-cmd');
+            if (cmdInput) {
+                cmdInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        executarComandoPersonalizado();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
