@@ -49,9 +49,7 @@ db.serialize(() => {
 
     // Inserir algumas mensagens de exemplo
     db.run(`INSERT OR IGNORE INTO messages (id, user_id, title, content, created_at) VALUES 
-        (1, 1, 'Welcome Admin', 'Esta é uma mensagem administrativa confidencial', '2024-12-03 00:00:00'),
-        (2, 2, 'Hello User', 'Esta é uma mensagem normal do usuário', '2024-12-03 00:00:00'),
-        (3, 3, 'Test Message', 'Mensagem de teste do guest', '2024-12-03 00:00:00')`);
+        (1, 1, 'Welcome', 'Seja bem vindo', '2024-12-03 00:00:00')`);
 });
 
 // Rotas
@@ -158,7 +156,7 @@ app.get('/api/messages', (req, res) => {
     const userId = req.session.user.id;
     
     // Vulnerabilidade: possível acesso a mensagens de outros usuários
-    const query = `SELECT * FROM messages WHERE user_id = ${userId}`;
+    const query = `SELECT * FROM messages`;
 
     //sanitizaQuery(query)
     
