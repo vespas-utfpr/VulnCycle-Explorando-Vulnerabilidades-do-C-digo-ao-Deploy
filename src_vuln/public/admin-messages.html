@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens - Aplicação Vulnerável</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📨 Suas Mensagens</h1>
+            <div class="user-info">
+                <span>Admin logado</span>
+                <form action="/dashboard" method="GET" style="display: inline;">
+                    <button type="submit" class="change-page-btn">Admin</button>
+                </form>
+                <form action="/logout" method="POST" style="display: inline;">
+                    <button type="submit" class="logout-btn">Sair</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="messages-content">
+            <div class="messages-list">
+                <h3>📬 Suas Mensagens</h3>
+                <div id="messages-container">
+                    <p>Carregando mensagens...</p>
+                </div>
+            </div>
+            
+            <div class="create-message-form">
+                <h3>📝 Criar Nova Mensagem</h3>
+                <form action="/create-message" method="POST">
+                    <div class="form-group">
+                        <label for="title">Título:</label>
+                        <input type="text" id="title" name="title" placeholder="Digite o título da mensagem">
+                    </div>
+                    <div class="form-group">
+                        <label for="content">Conteúdo:</label>
+                        <textarea id="content" name="content" rows="4" placeholder="Digite o conteúdo da mensagem"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">✉️ Enviar Mensagem</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar mensagens do usuário
+        fetch('/api/messages')
+            .then(response => response.json())
+            .then(messages => {
+                const container = document.getElementById('messages-container');
+                if (messages.length === 0) {
+                    container.innerHTML = '<p>Nenhuma mensagem encontrada.</p>';
+                    return;
+                }
+                
+                let html = '';
+                messages.forEach(message => {
+                    html += `
+                        <div class="message-card">
+                            <h4>${message.title}</h4>
+                            <p>${message.content}</p>
+                            <small>Data: ${new Date(message.created_at).toLocaleString('pt-BR')}</small>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('messages-container').innerHTML = 
+                    '<p>Erro ao carregar mensagens</p>';
+                console.error('Error:', error);
+            });
+    </script>
+</body>
+</html>
