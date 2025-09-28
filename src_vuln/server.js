@@ -48,10 +48,10 @@ db.serialize(() => {
         ('guest', '123456', 'user')`);
 
     // Inserir algumas mensagens de exemplo
-    db.run(`INSERT OR IGNORE INTO messages (user_id, title, content, created_at) VALUES 
-        (1, 'Welcome Admin', 'Esta é uma mensagem administrativa confidencial', '2024-12-03 00:00:00'),
-        (2, 'Hello User', 'Esta é uma mensagem normal do usuário', '2024-12-03 00:00:00'),
-        (3, 'Test Message', 'Mensagem de teste do guest', '2024-12-03 00:00:00')`);
+    db.run(`INSERT OR IGNORE INTO messages (id, user_id, title, content, created_at) VALUES 
+        (1, 1, 'Welcome Admin', 'Esta é uma mensagem administrativa confidencial', '2024-12-03 00:00:00'),
+        (2, 2, 'Hello User', 'Esta é uma mensagem normal do usuário', '2024-12-03 00:00:00'),
+        (3, 3, 'Test Message', 'Mensagem de teste do guest', '2024-12-03 00:00:00')`);
 });
 
 // Rotas
