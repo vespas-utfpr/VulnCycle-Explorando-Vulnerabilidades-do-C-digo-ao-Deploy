@@ -72,24 +72,37 @@ app.post('/login', (req, res) => {
     const { username, password } = req.body;
     
     // Vulnerabilidade: SQL Injection - consulta não preparada
+    const checkuser = `SELECT * FROM users WHERE username = '${username}'`;
     const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
-    
-    db.get(query, (err, user) => {
+
+    db.get(checkuser, (err, user) => {
         if (err) {
             console.error('Database error:', err);
             res.status(500).send('Erro interno do servidor');
             return;
         }
-        
+
         if (user) {
-            req.session.user = user;
-            if (user.role === 'admin') {
-                res.redirect('/dashboard');
-            } else {
-                res.redirect('/messages');
-            }
+            db.get(query, (err, user) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    res.status(500).send('Erro interno do servidor');
+                    return;
+                }
+
+                if (user) {
+                    req.session.user = user;
+                    if (user.role === 'admin') {
+                        res.redirect('/dashboard');
+                    } else {
+                        res.redirect('/messages');
+                    }
+                } else {
+                    res.send('<script>alert("Senha incorreta."); window.location="/";</script>');
+                }
+            });
         } else {
-            res.send('<script>alert("Credenciais inválidas!"); window.location="/";</script>');
+            res.send('<script>alert("Usuário não cadastrado."); window.location="/";</script>');
         }
     });
 });
