@@ -12,6 +12,9 @@
             <h1>🛡️ Dashboard do Administrador</h1>
             <div class="user-info">
                 <span>Bem-vindo, Admin!</span>
+                <form action="/messages" method="GET" style="display: inline;">
+                    <button type="submit" class="change-page-btn">Mensagens</button>
+                </form>
                 <form action="/logout" method="POST" style="display: inline;">
                     <button type="submit" class="logout-btn">Sair</button>
                 </form>
@@ -39,10 +42,7 @@
                 <div class="binary-actions">
                     <a href="/binary" class="binary-btn" target="_blank">
                         📦 Acessar Centro de Download
-                    </a>
-                    <a href="/binary/info" class="binary-btn" target="_blank">
-                        📊 Informações Técnicas (JSON)
-                    </a>
+                    </a>    
                 </div>
                 <div class="binary-warning">
                     <p>⚠️ <strong>Aviso:</strong> Esta funcionalidade expõe binários para download, 
