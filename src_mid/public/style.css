@@ -1,0 +1,916 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #0d70ce 0%, #27746e 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Login Form Styles */
+.login-form {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #5a6fd8;
+}
+
+.demo-credentials {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border-left: 4px solid #667eea;
+}
+
+.demo-credentials h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.demo-credentials p {
+    margin-bottom: 8px;
+    font-family: monospace;
+}
+
+.vulnerability-hint {
+    margin-top: 15px;
+    padding: 10px;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.vulnerability-hint code {
+    background: #e9ecef;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+/* Header Styles */
+.header {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    color: #333;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logout-btn {
+    width: auto;
+    padding: 8px 16px;
+    background: #dc3545;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background: #c82333;
+}
+
+/* Dashboard Styles */
+.dashboard-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.stats-card, .users-card, .vulnerability-info, .debug-section, .binary-center-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.stats-card h3, .users-card h3, .vulnerability-info h3, .debug-section h3, .binary-center-card h3 {
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 5px;
+}
+
+/* Estilos para Centro de Binários */
+.binary-center-card {
+    border-left: 4px solid #e74c3c;
+}
+
+.binary-center-card h3 {
+    border-bottom-color: #e74c3c;
+    color: #e74c3c;
+}
+
+.binary-actions {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.binary-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-block;
+}
+
+.binary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+    color: white;
+}
+
+.binary-warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.binary-warning p {
+    margin: 0;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background: #f8f9fa;
+    font-weight: bold;
+}
+
+table tr:hover {
+    background: #f5f5f5;
+}
+
+/* Vulnerability Info */
+.vulnerability-info ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.vulnerability-info li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.vulnerability-info li:last-child {
+    border-bottom: none;
+}
+
+.vulnerability-info strong {
+    color: #dc3545;
+}
+
+/* Debug Section */
+.debug-section button {
+    width: auto;
+    padding: 10px 20px;
+    margin-bottom: 15px;
+    background: #764ba2;
+}
+
+.debug-section button:hover {
+    background: #138496;
+}
+
+#debug-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+#debug-info pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+/* Messages Styles */
+.messages-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.messages-list {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.message-card {
+    background: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #667eea;
+}
+
+.message-card h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.message-card p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.message-card small {
+    color: #666;
+    font-style: italic;
+}
+
+.test-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: #fff3cd;
+    border-radius: 5px;
+}
+
+.test-section h4 {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.test-section ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+.test-section a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.test-section a:hover {
+    text-decoration: underline;
+}
+
+/* Admin Tool Styles */
+.admin-tool-section {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-left: 4px solid #000000;
+}
+
+.admin-tool-section h3 {
+    color: #000000;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 5px;
+}
+
+.tool-warning {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.tool-commands {
+    margin-bottom: 20px;
+}
+
+.tool-commands h4, .custom-command h4, .exploit-hints h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.tool-commands button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    background: #764ba2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.tool-commands button:hover {
+    background: #138496;
+}
+
+.custom-command {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.custom-command input {
+    width: 70%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-right: 10px;
+    font-family: monospace;
+}
+
+.custom-command button {
+    width: auto;
+    padding: 8px 16px;
+    background: #764ba2;
+    font-size: 14px;
+}
+
+.custom-command button:hover {
+    background: #138496;
+}
+
+.exploit-hints {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.exploit-hints ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.exploit-hints li {
+    margin-bottom: 5px;
+}
+
+.exploit-example {
+    background: #e9ecef;
+    padding: 10px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+.command-result {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.command-result h4 {
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 5px;
+}
+
+.command-result .output {
+    margin-bottom: 10px;
+}
+
+.command-result .output pre {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.command-result .error {
+    margin-bottom: 10px;
+}
+
+.command-result .error pre {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+}
+
+.command-result .exit-code {
+    font-weight: bold;
+    color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .dashboard-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .messages-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    .login-form {
+        margin: 20px auto;
+        padding: 20px;
+    }
+    
+    .custom-command input {
+        width: 100%;
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+    
+    .custom-command button {
+        width: 100%;
+    }
+}
+
+/* Estilos para formulário de criação de mensagem */
+.create-message-form {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    height: fit-content;
+}
+
+.create-message-form h3 {
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.create-message-form .form-group {
+    margin-bottom: 15px;
+}
+
+.create-message-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.create-message-form input,
+.create-message-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.create-message-form input:focus,
+.create-message-form textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.create-message-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Estilos para páginas de resposta XSS */
+.error-message,
+.success-message {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin: 50px auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+.error-message {
+    border-left: 5px solid #e74c3c;
+}
+
+.success-message {
+    border-left: 5px solid #27ae60;
+}
+
+.error-message h2 {
+    color: #e74c3c;
+    margin-bottom: 20px;
+}
+
+.success-message h2 {
+    color: #27ae60;
+    margin-bottom: 20px;
+}
+
+.error-message p,
+.success-message p {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.error-message a,
+.success-message a {
+    display: inline-block;
+    margin-top: 20px;
+    color: #667eea;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.error-message a:hover,
+.success-message a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para página de busca/visualização */
+.search-form {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.search-form h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.search-form form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: end;
+}
+
+.search-form input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+}
+
+.search-form button {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.search-results {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.search-results h3 {
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.vulnerability-demo {
+    background: #fff3cd;
+    border: 2px solid #ffeaa7;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.vulnerability-demo h4 {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.cookie-info {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+/* Estilos para exemplos de payload */
+.payload-examples {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.payload-examples p {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.payload-examples code {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #e74c3c;
+    word-break: break-all;
+}
+
+/* Estilos para página de exemplos XSS */
+.example-section {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.example-section h3 {
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e74c3c;
+    padding-bottom: 10px;
+}
+
+.attack-scenario {
+    background: #fff3cd;
+    border: 2px solid #ffeaa7;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.attack-scenario h4 {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.attack-scenario ol {
+    margin-left: 20px;
+}
+
+.attack-scenario li {
+    margin-bottom: 5px;
+    color: #856404;
+}
+
+.demo-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.demo-buttons button {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: transform 0.2s;
+}
+
+.demo-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.demo-output {
+    margin-top: 15px;
+    min-height: 50px;
+}
+
+.demo-result {
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.demo-result h4 {
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.demo-result pre {
+    background: #e9ecef;
+    padding: 10px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.test-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.test-links a {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.test-links a:hover {
+    background: #5a67d8;
+}
+
+.mitigation-info {
+    background: #d4edda;
+    border: 2px solid #c3e6cb;
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 25px;
+}
+
+.mitigation-info h3 {
+    color: #155724;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #27ae60;
+    padding-bottom: 10px;
+}
+
+.mitigation-examples {
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.mitigation-examples h4 {
+    color: #155724;
+    margin-bottom: 10px;
+}
+
+.mitigation-examples ol {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.mitigation-examples li {
+    margin-bottom: 5px;
+    color: #155724;
+}
+
+.mitigation-examples code {
+    display: block;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    margin-top: 10px;
+}
