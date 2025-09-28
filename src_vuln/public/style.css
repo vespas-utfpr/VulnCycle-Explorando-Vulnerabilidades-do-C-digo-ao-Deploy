@@ -548,7 +548,7 @@ table tr:hover {
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    margin-bottom: 25px;
+    height: fit-content;
 }
 
 .create-message-form h3 {
