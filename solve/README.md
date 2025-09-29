@@ -5,9 +5,14 @@
 - Isso indica uma vulnerabilidade com ID 'WSTG-IDNT-04'* de acordo com o Web Security Testing Guide do OWASP.
 - Vamos testar essa vulnerabilidade no tipo de teste black box
 
-- Podemos utilizar ferramentas prontas como o wfuzz, ffuf, etc.
+- Podemos utilizar ferramentas prontas como o wfuzz, ffuf, gobuster, feroxbuster etc.
 ### Instalação:
 '''pip3 install wfuzz''' ou ''' git clone https://github.com/xmendez/wfuzz.git '''
+
+### Podemos usar fuf (DIY):
+'''
+Algum codigo muito louco <rockyou.txt>
+'''
 
 
 

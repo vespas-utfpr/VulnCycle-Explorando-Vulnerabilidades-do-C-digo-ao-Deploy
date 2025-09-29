@@ -181,6 +181,7 @@ app.post('/create-message', (req, res) => {
     
     if (!title || !content) {
         // Vulnerabilidade XSS Reflected: dados não sanitizados refletidos na resposta
+        let titleSafe = document.getElementById("title").textContent
         res.send(`
             <html>
                 <head>
