@@ -6,19 +6,17 @@ const path = require('path');
 const fs = require('fs');
 const { spawn } = require('child_process');
 
-
 const app = express();
 const PORT = 3000;
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(session({
-    secret: 'senha-fraca',
+    secret: 'senha-fraca', 
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }
+    cookie: { secure: false } 
 }));
 
 // Inicializar banco de dados SQLite
@@ -68,15 +66,14 @@ app.get('/', (req, res) => {
     }
 });
 
-// Login - VULNERÁVEL A SQL INJECTION
+// Login
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     
-    // Vulnerabilidade: SQL Injection - consulta não preparada
-    const checkuser = `SELECT * FROM users WHERE username = '${username}'`;
-    const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+    // Vulnerabilidade: SQL Injection (corrigida)
+    const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
 
-    db.get(checkuser, (err, user) => {
+    db.get(query, [username, password], (err, user) => {
         if (err) {
             console.error('Database error:', err);
             res.status(500).send('Erro interno do servidor');
@@ -84,26 +81,14 @@ app.post('/login', (req, res) => {
         }
 
         if (user) {
-            db.get(query, (err, user) => {
-                if (err) {
-                    console.error('Database error:', err);
-                    res.status(500).send('Erro interno do servidor');
-                    return;
-                }
-
-                if (user) {
-                    req.session.user = user;
-                    if (user.role === 'admin') {
-                        res.redirect('/dashboard');
-                    } else {
-                        res.redirect('/messages');
-                    }
-                } else {
-                    res.send('<script>alert("Senha incorreta."); window.location="/";</script>');
-                }
-            });
+            req.session.user = user;
+            if (user.role === 'admin') {
+                res.redirect('/dashboard');
+            } else {
+                res.redirect('/messages');
+            }
         } else {
-            res.send('<script>alert("Usuário não cadastrado."); window.location="/";</script>');
+            res.send('<script>alert("Credenciais inválidas."); window.location="/";</script>');
         }
     });
 });
@@ -157,7 +142,7 @@ app.get('/api/messages', (req, res) => {
     }
         
     const query = `SELECT * FROM messages`;
-
+    
     db.all(query, (err, messages) => {
         if (err) {
             res.status(500).json({ error: 'Erro no banco de dados' });
@@ -167,18 +152,28 @@ app.get('/api/messages', (req, res) => {
     });
 });
 
-// Rota para criar nova mensagem - VULNERÁVEL A XSS STORED
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// Rota para criar nova mensagem - XSS (corrigido)
 app.post('/create-message', (req, res) => {
     if (!req.session.user) {
         res.redirect('/');
         return;
     }
     
-    const { title, content } = req.body;
+    const title = "" + req.body.title;
+    const content = "" + req.body.content;
     const userId = req.session.user.id;
     
     if (!title || !content) {
-        // Vulnerabilidade XSS STORED: dados não sanitizados guardados na resposta
+
         res.send(`
             <html>
                 <head>
@@ -189,8 +184,8 @@ app.post('/create-message', (req, res) => {
                     <div class="container">
                         <div class="error-message">
                             <h2>⚠️ Erro ao criar mensagem</h2>
-                            <p>Título informado: <strong>${title || 'Não informado'}</strong></p>
-                            <p>Conteúdo informado: <strong>${content || 'Não informado'}</strong></p>
+                            <p>Título informado: <strong> ${escapeHtml(title || 'Não informado')} </strong></p>
+                            <p>Conteúdo informado: <strong> ${escapeHtml(content || 'Não informado')} </strong></p>
                             <p>Todos os campos são obrigatórios!</p>
                             <a href="/messages">← Voltar às mensagens</a>
                         </div>
@@ -201,10 +196,9 @@ app.post('/create-message', (req, res) => {
         return;
     }
     
-    // Inserir mensagem no banco (também vulnerável a SQL injection)
-    const query = `INSERT INTO messages (user_id, title, content) VALUES (${userId}, '${title}', '${content}')`;
+    const query = `INSERT INTO messages (user_id, title, content) VALUES (?, ?, ?)`;
     
-    db.run(query, function(err) {
+    db.run(query, [userId, title, content], function(err) {
         if (err) {
             console.error('Erro ao inserir mensagem:', err);
             res.send(`
@@ -217,7 +211,7 @@ app.post('/create-message', (req, res) => {
                         <div class="container">
                             <div class="error-message">
                                 <h2>💥 Erro no banco de dados</h2>
-                                <p>Título: <strong>${title}</strong></p>
+                                <p>Título: <strong>${escapeHtml(title)}</strong></p>
                                 <p>Erro: ${err.message}</p>
                                 <a href="/messages">← Voltar às mensagens</a>
                             </div>
@@ -238,8 +232,8 @@ app.post('/create-message', (req, res) => {
                     <div class="container">
                         <div class="success-message">
                             <h2>✅ Mensagem criada com sucesso!</h2>
-                            <p>Título: <strong>${title}</strong></p>
-                            <p>Conteúdo: <strong>${content}</strong></p>
+                            <p>Título: <strong>${escapeHtml(title)}</strong></p>
+                            <p>Conteúdo: <strong>${escapeHtml(content)}</strong></p>
                             <p>ID da mensagem: ${this.lastID}</p>
                             <a href="/messages">← Voltar às mensagens</a>
                         </div>
@@ -256,7 +250,7 @@ app.post('/logout', (req, res) => {
     res.redirect('/');
 });
 
-// Rota para executar ferramenta administrativa em C (vulnerável a buffer overflow)
+// Rota para executar ferramenta administrativa em C - BOF (corrigido)
 app.post('/admin-tool', (req, res) => {
     if (!req.session.user || req.session.user.role !== 'admin') {
         res.status(403).json({ error: 'Acesso negado - apenas administradores' });
@@ -270,7 +264,6 @@ app.post('/admin-tool', (req, res) => {
         return;
     }
     
-    // Vulnerabilidade: execução de comando sem sanitização adequada
     const adminTool = spawn('./admin_tool', [comando], {
         timeout: 5000,
         cwd: __dirname
