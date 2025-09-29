@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Tool - Terminal Interativo</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .terminal {
+            background-color: #1e1e1e;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            border: 2px solid #333;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .terminal-input {
+            background-color: #1e1e1e;
+            color: #00ff00;
+            border: none;
+            font-family: 'Courier New', monospace;
+            width: 100%;
+            padding: 10px;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .terminal-line {
+            margin: 2px 0;
+            word-wrap: break-word;
+        }
+        
+        .error {
+            color: #ff6b6b;
+        }
+        
+        .success {
+            color: #51cf66;
+        }
+        
+        .warning {
+            color: #ffd43b;
+        }
+        
+        .control-buttons {
+            margin: 10px 0;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-success { background-color: #51cf66; color: white; }
+        .btn-danger { background-color: #ff6b6b; color: white; }
+        .btn-warning { background-color: #ffd43b; color: black; }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .status.connected { background-color: #d4edda; color: #155724; }
+        .status.disconnected { background-color: #f8d7da; color: #721c24; }
+        .status.running { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Admin Tool - Terminal Interativo</h1>
+            <p>Interface para comunicação com o binário admin_tool</p>
+        </div>
+
+        <div id="status" class="status disconnected">
+            ⚠️ Desconectado
+        </div>
+
+        <div class="control-buttons">
+            <button id="startBtn" class="btn btn-success">▶️ Iniciar Admin Tool</button>
+            <button id="stopBtn" class="btn btn-danger" disabled>⏹️ Parar Admin Tool</button>
+            <button id="clearBtn" class="btn btn-warning">🗑️ Limpar Terminal</button>
+        </div>
+
+        <div id="terminal" class="terminal">
+            <div class="terminal-line">🔧 Terminal Admin Tool</div>
+            <div class="terminal-line">Digite comandos após iniciar o processo...</div>
+            <div class="terminal-line">═══════════════════════════════════════</div>
+        </div>
+
+        <div style="position: relative;">
+            <input type="text" id="commandInput" class="terminal-input" 
+                   placeholder="Digite seu comando aqui..." disabled>
+        </div>
+
+        <div class="info-box">
+            <h3>📋 Comandos Disponíveis:</h3>
+            <ul>
+                <li><code>admin:ls</code> - Listar arquivos</li>
+                <li><code>admin:whoami</code> - Mostrar usuário atual</li>
+                <li><code>quit</code> - Finalizar sessão</li>
+            </ul>
+            
+            <h3>⚠️ Informações de Segurança:</h3>
+            <p>Este binário contém vulnerabilidades intencionais para fins educativos:</p>
+            <ul>
+                <li>Buffer overflow na entrada do nome de usuário</li>
+                <li>Função <code>acessar_shell()</code> para ret2win</li>
+            </ul>
+        </div>
+
+        <div class="navigation">
+            <a href="/dashboard">← Voltar ao Dashboard</a>
+            <a href="/logout" style="float: right;">Logout</a>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        const terminal = document.getElementById('terminal');
+        const commandInput = document.getElementById('commandInput');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const status = document.getElementById('status');
+        
+        let isProcessRunning = false;
+        let sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+        
+        // Funções de utilidade
+        function addToTerminal(text, className = '') {
+            const line = document.createElement('div');
+            line.className = 'terminal-line ' + className;
+            line.textContent = text;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+        
+        function updateStatus(text, className) {
+            status.textContent = text;
+            status.className = 'status ' + className;
+        }
+        
+        function updateButtons(running) {
+            isProcessRunning = running;
+            startBtn.disabled = running;
+            stopBtn.disabled = !running;
+            commandInput.disabled = !running;
+            
+            if (running) {
+                commandInput.focus();
+            }
+        }
+        
+        // Event listeners dos botões
+        startBtn.addEventListener('click', () => {
+            socket.emit('start-admin-tool', {
+                sessionId: sessionId,
+                username: 'admin_user'
+            });
+        });
+        
+        stopBtn.addEventListener('click', () => {
+            socket.emit('stop-admin-tool', { sessionId: sessionId });
+        });
+        
+        clearBtn.addEventListener('click', () => {
+            terminal.innerHTML = '';
+            addToTerminal('🔧 Terminal limpo');
+            addToTerminal('═══════════════════════════════════════');
+        });
+        
+        // Input de comandos
+        commandInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && isProcessRunning) {
+                const command = commandInput.value.trim();
+                if (command) {
+                    addToTerminal('admin@system:~$ ' + command, 'success');
+                    socket.emit('admin-tool-command', {
+                        sessionId: sessionId,
+                        command: command
+                    });
+                    commandInput.value = '';
+                }
+            }
+        });
+        
+        // Socket event listeners
+        socket.on('connect', () => {
+            updateStatus('🟢 Conectado ao servidor', 'connected');
+        });
+        
+        socket.on('disconnect', () => {
+            updateStatus('🔴 Desconectado do servidor', 'disconnected');
+            updateButtons(false);
+        });
+        
+        socket.on('admin-tool-started', (data) => {
+            addToTerminal('✅ ' + data.message, 'success');
+            updateStatus('🔄 Admin Tool rodando...', 'running');
+            updateButtons(true);
+        });
+        
+        socket.on('admin-tool-output', (data) => {
+            // Dividir output em linhas para melhor formatação
+            const lines = data.data.split('\n');
+            lines.forEach(line => {
+                if (line.trim()) {
+                    addToTerminal(line);
+                }
+            });
+        });
+        
+        socket.on('admin-tool-error', (data) => {
+            addToTerminal('❌ Erro: ' + (data.error || data.data), 'error');
+        });
+        
+        socket.on('admin-tool-closed', (data) => {
+            addToTerminal('🔚 ' + data.message, 'warning');
+            updateStatus('⚠️ Processo finalizado', 'disconnected');
+            updateButtons(false);
+        });
+        
+        socket.on('admin-tool-stopped', (data) => {
+            addToTerminal('⏹️ ' + data.message, 'warning');
+            updateStatus('⚠️ Processo parado', 'disconnected');
+            updateButtons(false);
+        });
+        
+        // Inicialização
+        updateButtons(false);
+    </script>
+</body>
+</html>
