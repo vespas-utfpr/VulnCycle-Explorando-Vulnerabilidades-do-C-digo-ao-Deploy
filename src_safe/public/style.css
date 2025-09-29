@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #0d70ce 0%, #27746e 100%);
+    background: linear-gradient(135deg, #1f4e79 0%, #27746e 100%);
     min-height: 100vh;
     color: #333;
 }
@@ -71,7 +71,7 @@ body {
 button {
     width: 100%;
     padding: 12px;
-    background: #667eea;
+    background: #27746e;
     color: white;
     border: none;
     border-radius: 5px;
@@ -81,7 +81,7 @@ button {
 }
 
 button:hover {
-    background: #5a6fd8;
+    background: #649f17;
 }
 
 .demo-credentials {
@@ -149,6 +149,17 @@ button:hover {
 
 .logout-btn:hover {
     background: #c82333;
+}
+
+.change-page-btn {
+    width: auto;
+    padding: 8px 16px;
+    background: #1f4e79;
+    font-size: 14px;
+}
+
+.change-page-btn:hover {
+    background: #0d70ce;
 }
 
 /* Dashboard Styles */
@@ -389,7 +400,7 @@ table tr:hover {
     margin-right: 10px;
     margin-bottom: 10px;
     padding: 8px 16px;
-    background: #764ba2;
+    background: #1f4e79;
     color: white;
     border: none;
     border-radius: 5px;
@@ -398,7 +409,7 @@ table tr:hover {
 }
 
 .tool-commands button:hover {
-    background: #138496;
+    background: #0d70ce;
 }
 
 .custom-command {
@@ -420,12 +431,13 @@ table tr:hover {
 .custom-command button {
     width: auto;
     padding: 8px 16px;
-    background: #764ba2;
+    margin: 5px 0px;
+    background: #27746e;
     font-size: 14px;
 }
 
 .custom-command button:hover {
-    background: #138496;
+    background: #649f17;
 }
 
 .exploit-hints {
@@ -591,7 +603,6 @@ table tr:hover {
 }
 
 .submit-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     border: none;
     padding: 12px 25px;
