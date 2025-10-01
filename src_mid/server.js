@@ -70,8 +70,10 @@ app.get('/', (req, res) => {
 function strip(unsafe) {
     return unsafe
         .replace(/OR/g, "")
-        .replace(/or/g, "")
-        .replace(/<script>/g, "");
+        .replace(/<script>/g, "")
+        .replace(/<\/script>/g, "")
+        .replace(/<svg>/g, "")
+        .replace(/<\/svg>/g, "");
 }
 
 // Login - VULNERÁVEL A SQL INJECTION
@@ -82,7 +84,7 @@ app.post('/login', (req, res) => {
     const checkuser = `SELECT * FROM users WHERE username = '${username}'`;
     const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
 
-    db.get(checkuser, (err, user) => {
+    db.get(strip(checkuser), (err, user) => {
         if (err) {
             console.error('Database error:', err);
             res.status(500).send('Erro interno do servidor');

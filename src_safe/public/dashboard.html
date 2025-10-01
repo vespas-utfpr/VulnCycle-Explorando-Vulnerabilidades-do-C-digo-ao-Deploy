@@ -75,37 +75,36 @@
                 console.error('Error:', error);
             });
 
-        function executarFerramenta(comando) {
+        function executarFerramenta(username) {
             const outputDiv = document.getElementById('tool-output');
-            outputDiv.innerHTML = '<p>🔄 Executando comando: ' + comando + '</p>';
+            outputDiv.innerHTML = '<p>🔄 Enviando nome de usuário: ' + username + '</p>';
             
             fetch('/admin-tool', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ comando: comando })
+                body: JSON.stringify({ username: username })
             })
             .then(response => response.json())
             .then(data => {
                 let html = '<div class="command-result">';
-                html += '<h4>📄 Resultado do Comando: ' + data.comando + '</h4>';
+                html += '<h4>👤 Nome de Usuário Enviado: ' + data.username + '</h4>';
                 
                 if (data.output) {
-                    html += '<div class="output"><strong>Output:</strong><pre>' + data.output + '</pre></div>';
+                    html += '<div class="output"><strong>Resposta da Ferramenta:</strong><pre>' + data.output + '</pre></div>';
                 }
                 
                 if (data.error) {
                     html += '<div class="error"><strong>Erro:</strong><pre>' + data.error + '</pre></div>';
                 }
                 
-                html += '<div class="exit-code"><strong>Exit Code:</strong> ' + data.exitCode + '</div>';
                 html += '</div>';
                 
                 outputDiv.innerHTML = html;
             })
             .catch(error => {
-                outputDiv.innerHTML = '<p>❌ Erro ao executar comando: ' + error.message + '</p>';
+                outputDiv.innerHTML = '<p>❌ Erro ao executar ferramenta: ' + error.message + '</p>';
             });
         }
 

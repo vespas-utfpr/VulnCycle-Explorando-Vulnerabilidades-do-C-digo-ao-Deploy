@@ -250,51 +250,73 @@ app.post('/logout', (req, res) => {
     res.redirect('/');
 });
 
-// Rota para executar ferramenta administrativa em C - BOF (corrigido)
 app.post('/admin-tool', (req, res) => {
-    if (!req.session.user || req.session.user.role !== 'admin') {
-        res.status(403).json({ error: 'Acesso negado - apenas administradores' });
-        return;
+    if (!req.session.user) {
+        return res.status(403).json({ error: 'Acesso negado - apenas administradores' });
     }
     
-    const { comando } = req.body;
+    const { username } = req.body;
     
-    if (!comando) {
-        res.status(400).json({ error: 'Comando não fornecido' });
-        return;
+    if (!username) {
+        return res.status(400).json({ error: 'Nome de usuário não fornecido' });
     }
     
-    const adminTool = spawn('./admin_tool', [comando], {
-        timeout: 5000,
-        cwd: __dirname
-    });
+    // Initialize process only once
+    if (!globalAdminTool || globalAdminTool.killed) {
+        globalAdminTool = spawn('./binary/admin_tool', [], {
+            cwd: __dirname
+        });
+        
+        globalAdminTool.on('close', (code) => {
+            console.log('Admin tool process closed with code:', code);
+            globalAdminTool = null;
+        });
+        
+        globalAdminTool.on('error', (err) => {
+            console.error('Admin tool process error:', err);
+            globalAdminTool = null;
+        });
+    }
+    
+    // Send the username to the tool
+    globalAdminTool.stdin.write(username + '\n');
     
     let output = '';
     let error = '';
     
-    adminTool.stdout.on('data', (data) => {
+    // Set up temporary listeners for this request
+    const outputHandler = (data) => {
         output += data.toString();
-    });
+    };
     
-    adminTool.stderr.on('data', (data) => {
+    const errorHandler = (data) => {
         error += data.toString();
-    });
+    };
     
-    adminTool.on('close', (code) => {
+    // ... after attaching listeners
+    globalAdminTool.stdout.on('data', outputHandler);
+    globalAdminTool.stderr.on('data', errorHandler);
+
+    // Wait for the tool to respond with the name
+    setTimeout(() => {
+        // Defensive: check that globalAdminTool still exists and has streams
+        try {
+            if (globalAdminTool && globalAdminTool.stdout && !globalAdminTool.killed) {
+                globalAdminTool.stdout.removeListener('data', outputHandler);
+            }
+            if (globalAdminTool && globalAdminTool.stderr && !globalAdminTool.killed) {
+                globalAdminTool.stderr.removeListener('data', errorHandler);
+            }
+        } catch (e) {
+            console.error('Erro ao remover listeners do adminTool:', e);
+        }
+
         res.json({
-            comando: comando,
+            username: username,
             output: output,
-            error: error,
-            exitCode: code
+            error: error
         });
-    });
-    
-    adminTool.on('error', (err) => {
-        res.status(500).json({
-            error: 'Erro ao executar ferramenta administrativa',
-            details: err.message
-        });
-    });
+    }, 1000);
 });
 
 // Rota para download do binário admin_tool
