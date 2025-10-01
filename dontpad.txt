@@ -1,0 +1,12 @@
+Links Uteis:
+
+https://github.com/vespas-utfpr/VulnCycle-Explorando-Vulnerabilidades-do-C-digo-ao-Deploy.git
+https://owasp.org/
+
+Baixando para a sua máquina:
+
+1.sudo apt install npm
+2. git clone github-link
+3. cd VulnCycle-Explorando-Vulnerabilidades-do-C-digo-ao-Deploy/src_vuln
+4. npm install
+5. npm start

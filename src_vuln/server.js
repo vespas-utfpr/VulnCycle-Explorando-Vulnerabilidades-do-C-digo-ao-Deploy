@@ -348,7 +348,7 @@ app.post('/admin-tool-reset', (req, res) => {
 
 // Rota para download do binário admin_tool
 app.get('/admin_tool', (req, res) => {
-    const filePath = path.join(__dirname, 'admin_tool');
+    const filePath = path.join(__dirname, '/binary/admin_tool');
     
     if (!fs.existsSync(filePath)) {
         return res.status(404).send(`
