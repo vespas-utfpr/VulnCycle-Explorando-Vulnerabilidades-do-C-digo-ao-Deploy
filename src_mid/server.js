@@ -6,17 +6,19 @@ const path = require('path');
 const fs = require('fs');
 const { spawn } = require('child_process');
 
+
 const app = express();
 const PORT = 3000;
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(session({
-    secret: 'senha-fraca', 
+    secret: 'senha-fraca',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } 
+    cookie: { secure: false }
 }));
 
 // Inicializar banco de dados SQLite
@@ -65,15 +67,22 @@ app.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, 'public', 'login.html'));
     }
 });
+function strip(unsafe) {
+    return unsafe
+        .replace(/OR/g, "")
+        .replace(/or/g, "")
+        .replace(/<script>/g, "");
+}
 
-// Login
+// Login - VULNERÁVEL A SQL INJECTION
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     
-    // Vulnerabilidade: SQL Injection (corrigida)
-    const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
+    // Vulnerabilidade: SQL Injection - consulta não preparada
+    const checkuser = `SELECT * FROM users WHERE username = '${username}'`;
+    const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
 
-    db.get(query, [username, password], (err, user) => {
+    db.get(checkuser, (err, user) => {
         if (err) {
             console.error('Database error:', err);
             res.status(500).send('Erro interno do servidor');
@@ -81,14 +90,26 @@ app.post('/login', (req, res) => {
         }
 
         if (user) {
-            req.session.user = user;
-            if (user.role === 'admin') {
-                res.redirect('/dashboard');
-            } else {
-                res.redirect('/messages');
-            }
+            db.get(strip(query), (err, user) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    res.status(500).send('Erro interno do servidor');
+                    return;
+                }
+
+                if (user) {
+                    req.session.user = user;
+                    if (user.role === 'admin') {
+                        res.redirect('/dashboard');
+                    } else {
+                        res.redirect('/messages');
+                    }
+                } else {
+                    res.send('<script>alert("Senha incorreta."); window.location="/";</script>');
+                }
+            });
         } else {
-            res.send('<script>alert("Credenciais inválidas."); window.location="/";</script>');
+            res.send('<script>alert("Usuário não cadastrado."); window.location="/";</script>');
         }
     });
 });
@@ -142,7 +163,7 @@ app.get('/api/messages', (req, res) => {
     }
         
     const query = `SELECT * FROM messages`;
-    
+
     db.all(query, (err, messages) => {
         if (err) {
             res.status(500).json({ error: 'Erro no banco de dados' });
@@ -152,28 +173,17 @@ app.get('/api/messages', (req, res) => {
     });
 });
 
-function escapeScript(unsafe) {
-    return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-// Rota para criar nova mensagem - XSS (corrigido)
+// Rota para criar nova mensagem - XSS corrigido?
 app.post('/create-message', (req, res) => {
     if (!req.session.user) {
         res.redirect('/');
         return;
     }
     
-    const title = "" + req.body.title;
-    const content = "" + req.body.content;
+    const { title, content } = req.body;
     const userId = req.session.user.id;
     
     if (!title || !content) {
-
         res.send(`
             <html>
                 <head>
@@ -184,8 +194,8 @@ app.post('/create-message', (req, res) => {
                     <div class="container">
                         <div class="error-message">
                             <h2>⚠️ Erro ao criar mensagem</h2>
-                            <p>Título informado: <strong> ${escapeScript(title || 'Não informado')} </strong></p>
-                            <p>Conteúdo informado: <strong> ${escapeScript(content || 'Não informado')} </strong></p>
+                            <p>Título informado: <strong>${strip(title || 'Não informado')}</strong></p>
+                            <p>Conteúdo informado: <strong>${strip(content || 'Não informado')}</strong></p>
                             <p>Todos os campos são obrigatórios!</p>
                             <a href="/messages">← Voltar às mensagens</a>
                         </div>
@@ -196,9 +206,10 @@ app.post('/create-message', (req, res) => {
         return;
     }
     
-    const query = `INSERT INTO messages (user_id, title, content) VALUES (?, ?, ?)`;
+    // Inserir mensagem no banco (SQLi corrigido?)
+    const query = `INSERT INTO messages (user_id, title, content) VALUES (${userId}, '${title}', '${content}')`;
     
-    db.run(query, [userId, title, content], function(err) {
+    db.run(strip(query), function(err) {
         if (err) {
             console.error('Erro ao inserir mensagem:', err);
             res.send(`
@@ -211,7 +222,7 @@ app.post('/create-message', (req, res) => {
                         <div class="container">
                             <div class="error-message">
                                 <h2>💥 Erro no banco de dados</h2>
-                                <p>Título: <strong>${escapeScript(title)}</strong></p>
+                                <p>Título: <strong>${strip(title)}</strong></p>
                                 <p>Erro: ${err.message}</p>
                                 <a href="/messages">← Voltar às mensagens</a>
                             </div>
@@ -232,8 +243,8 @@ app.post('/create-message', (req, res) => {
                     <div class="container">
                         <div class="success-message">
                             <h2>✅ Mensagem criada com sucesso!</h2>
-                            <p>Título: <strong>${escapeScript(title)}</strong></p>
-                            <p>Conteúdo: <strong>${escapeScript(content)}</strong></p>
+                            <p>Título: <strong>${strip(title)}</strong></p>
+                            <p>Conteúdo: <strong>${strip(content)}</strong></p>
                             <p>ID da mensagem: ${this.lastID}</p>
                             <a href="/messages">← Voltar às mensagens</a>
                         </div>
@@ -250,7 +261,11 @@ app.post('/logout', (req, res) => {
     res.redirect('/');
 });
 
-// Rota para executar ferramenta administrativa em C - BOF (corrigido)
+// Global process management for admin_tool
+let globalAdminTool = null;
+let isInitialized = false;
+
+// Rota para executar ferramenta administrativa em C (vulnerável a buffer overflow)
 app.post('/admin-tool', (req, res) => {
     if (!req.session.user || req.session.user.role !== 'admin') {
         res.status(403).json({ error: 'Acesso negado - apenas administradores' });
@@ -264,42 +279,81 @@ app.post('/admin-tool', (req, res) => {
         return;
     }
     
-    const adminTool = spawn('./admin_tool', [comando], {
-        timeout: 5000,
-        cwd: __dirname
-    });
+    // Initialize process only once
+    if (!globalAdminTool || globalAdminTool.killed) {
+        globalAdminTool = spawn('./binary/admin_tool', [], {
+            cwd: __dirname
+        });
+        
+        // Send username only on first initialization
+        globalAdminTool.stdin.write('admin_user\n');
+        isInitialized = true;
+        
+        globalAdminTool.on('close', (code) => {
+            console.log('Admin tool process closed with code:', code);
+            globalAdminTool = null;
+            isInitialized = false;
+        });
+        
+        globalAdminTool.on('error', (err) => {
+            console.log('Admin tool process error:', err);
+            globalAdminTool = null;
+            isInitialized = false;
+        });
+    }
+    
+    // Send only the command (not username again)
+    globalAdminTool.stdin.write(comando + '\n');
     
     let output = '';
     let error = '';
     
-    adminTool.stdout.on('data', (data) => {
+    // Set up temporary listeners for this request
+    const outputHandler = (data) => {
         output += data.toString();
-    });
+    };
     
-    adminTool.stderr.on('data', (data) => {
+    const errorHandler = (data) => {
         error += data.toString();
-    });
+    };
     
-    adminTool.on('close', (code) => {
+    globalAdminTool.stdout.on('data', outputHandler);
+    globalAdminTool.stderr.on('data', errorHandler);
+    
+    // Wait a bit for response, then send back
+    setTimeout(() => {
+        // Remove temporary listeners
+        globalAdminTool.stdout.removeListener('data', outputHandler);
+        globalAdminTool.stderr.removeListener('data', errorHandler);
+        
         res.json({
             comando: comando,
             output: output,
             error: error,
-            exitCode: code
+            processState: 'running'
         });
-    });
+    }, 1000); // Wait 1 second for output
+});
+
+// Reset admin tool process
+app.post('/admin-tool-reset', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        res.status(403).json({ error: 'Acesso negado - apenas administradores' });
+        return;
+    }
     
-    adminTool.on('error', (err) => {
-        res.status(500).json({
-            error: 'Erro ao executar ferramenta administrativa',
-            details: err.message
-        });
-    });
+    if (globalAdminTool && !globalAdminTool.killed) {
+        globalAdminTool.stdin.write('quit\n');
+        globalAdminTool = null;
+        isInitialized = false;
+    }
+    
+    res.json({ message: 'Admin tool process reset' });
 });
 
 // Rota para download do binário admin_tool
 app.get('/admin_tool', (req, res) => {
-    const filePath = path.join(__dirname, 'admin_tool');
+    const filePath = path.join(__dirname, '/binary/admin_tool');
     
     if (!fs.existsSync(filePath)) {
         return res.status(404).send(`
