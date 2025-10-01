@@ -262,16 +262,14 @@ let isInitialized = false;
 
 // Rota para executar ferramenta administrativa em C (vulnerável a buffer overflow)
 app.post('/admin-tool', (req, res) => {
-    if (!req.session.user || req.session.user.role !== 'admin') {
-        res.status(403).json({ error: 'Acesso negado - apenas administradores' });
-        return;
+    if (!req.session.user) {
+        return res.status(403).json({ error: 'Acesso negado - apenas administradores' });
     }
     
-    const { comando } = req.body;
+    const { username } = req.body;
     
-    if (!comando) {
-        res.status(400).json({ error: 'Comando não fornecido' });
-        return;
+    if (!username) {
+        return res.status(400).json({ error: 'Nome de usuário não fornecido' });
     }
     
     // Initialize process only once
@@ -280,25 +278,19 @@ app.post('/admin-tool', (req, res) => {
             cwd: __dirname
         });
         
-        // Send username only on first initialization
-        globalAdminTool.stdin.write('admin_user\n');
-        isInitialized = true;
-        
         globalAdminTool.on('close', (code) => {
             console.log('Admin tool process closed with code:', code);
             globalAdminTool = null;
-            isInitialized = false;
         });
         
         globalAdminTool.on('error', (err) => {
-            console.log('Admin tool process error:', err);
+            console.error('Admin tool process error:', err);
             globalAdminTool = null;
-            isInitialized = false;
         });
     }
     
-    // Send only the command (not username again)
-    globalAdminTool.stdin.write(comando + '\n');
+    // Send the username to the tool
+    globalAdminTool.stdin.write(username + '\n');
     
     let output = '';
     let error = '';
@@ -312,38 +304,30 @@ app.post('/admin-tool', (req, res) => {
         error += data.toString();
     };
     
+    // ... after attaching listeners
     globalAdminTool.stdout.on('data', outputHandler);
     globalAdminTool.stderr.on('data', errorHandler);
-    
-    // Wait a bit for response, then send back
-    setTimeout(() => {
-        // Remove temporary listeners
-        globalAdminTool.stdout.removeListener('data', outputHandler);
-        globalAdminTool.stderr.removeListener('data', errorHandler);
-        
-        res.json({
-            comando: comando,
-            output: output,
-            error: error,
-            processState: 'running'
-        });
-    }, 1000); // Wait 1 second for output
-});
 
-// Reset admin tool process
-app.post('/admin-tool-reset', (req, res) => {
-    if (!req.session.user || req.session.user.role !== 'admin') {
-        res.status(403).json({ error: 'Acesso negado - apenas administradores' });
-        return;
-    }
-    
-    if (globalAdminTool && !globalAdminTool.killed) {
-        globalAdminTool.stdin.write('quit\n');
-        globalAdminTool = null;
-        isInitialized = false;
-    }
-    
-    res.json({ message: 'Admin tool process reset' });
+    // Wait for the tool to respond with the name
+    setTimeout(() => {
+        // Defensive: check that globalAdminTool still exists and has streams
+        try {
+            if (globalAdminTool && globalAdminTool.stdout && !globalAdminTool.killed) {
+                globalAdminTool.stdout.removeListener('data', outputHandler);
+            }
+            if (globalAdminTool && globalAdminTool.stderr && !globalAdminTool.killed) {
+                globalAdminTool.stderr.removeListener('data', errorHandler);
+            }
+        } catch (e) {
+            console.error('Erro ao remover listeners do adminTool:', e);
+        }
+
+        res.json({
+            username: username,
+            output: output,
+            error: error
+        });
+    }, 1000);
 });
 
 // Rota para download do binário admin_tool
